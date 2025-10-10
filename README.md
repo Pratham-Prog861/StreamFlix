@@ -67,7 +67,7 @@ A full-stack video streaming platform built with React, Node.js, Express, and Mo
 1. **Clone the repository**
 
 ```bash
-git clone https://github.com/pratham-prog861/streamflix.git
+git clone https://github.com/pratham-prog861/StreamFlix.git
 cd streamflix
 ```
 
@@ -412,7 +412,7 @@ Video 507f1f77bcf86cd799439011 processing completed
 
 ```javascript
 // Check video processing status
-db.videos.find({ processingStatus: "processing" });
+db.videos.find({ processingStatus: 'processing' });
 
 // View video qualities
 db.videos.findOne({}, { title: 1, qualities: 1, processingStatus: 1 });
@@ -421,7 +421,7 @@ db.videos.findOne({}, { title: 1, qualities: 1, processingStatus: 1 });
 db.videos.countDocuments();
 
 // Find admin users
-db.users.find({ role: "admin" });
+db.users.find({ role: 'admin' });
 ```
 
 ## 🐛 Troubleshooting
@@ -494,7 +494,7 @@ mongod
 | 30 minutes   | ~12 minutes     |
 | 1 hour       | ~25 minutes     |
 
-Times vary based on server CPU_
+Times vary based on server CPU\_
 
 ## 🔒 Security Features
 
