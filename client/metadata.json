@@ -1,0 +1,5 @@
+{
+  "name": "StreamFlix - A Netflix Clone",
+  "description": "A visually stunning, frontend-only clone of a video streaming platform, built with React, TypeScript, and Tailwind CSS. Features a dynamic UI with mock data to simulate a real-world user experience.",
+  "requestFramePermissions": []
+}
