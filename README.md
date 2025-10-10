@@ -604,7 +604,3 @@ For issues and questions:
 ---
 
 ## Happy Streaming! 🎬✨
-
-For detailed setup instructions, see [SETUP.md](SETUP.md)
-
-For quality selector documentation, see [QUALITY_FEATURE.md](QUALITY_FEATURE.md)
