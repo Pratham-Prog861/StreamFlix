@@ -5,10 +5,10 @@ export interface Video {
   thumbnailUrl: string;
   videoUrl: string;
   qualities?: {
-    "360p"?: string;
-    "480p"?: string;
-    "720p"?: string;
-    "1080p"?: string;
+    '360p'?: string;
+    '480p'?: string;
+    '720p'?: string;
+    '1080p'?: string;
     original?: string;
   };
   genre: string;
@@ -22,6 +22,11 @@ export interface Video {
   };
   processingStatus?: string;
   createdAt?: string;
+  embedUrl?: string;
+  tmdbId?: number;
+  type?: 'movie' | 'tv';
+  season?: number;
+  episode?: number;
 }
 
 export interface Category {
@@ -36,10 +41,10 @@ export interface BackendVideo {
   description: string;
   videoPath: string;
   qualities?: {
-    "360p"?: string;
-    "480p"?: string;
-    "720p"?: string;
-    "1080p"?: string;
+    '360p'?: string;
+    '480p'?: string;
+    '720p'?: string;
+    '1080p'?: string;
     original?: string;
   };
   thumbnailPath: string;
@@ -49,4 +54,9 @@ export interface BackendVideo {
   views: number;
   processingStatus?: string;
   createdAt: string;
+  tmdbId?: number;
+  type?: 'movie' | 'tv';
+  posterPath?: string;
+  backdropPath?: string;
+  embedUrl?: string;
 }

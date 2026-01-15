@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 interface ApiError {
   message: string;
@@ -9,15 +9,15 @@ class ApiService {
   private token: string | null = null;
 
   constructor() {
-    this.token = localStorage.getItem("token");
+    this.token = localStorage.getItem('token');
   }
 
   setToken(token: string | null) {
     this.token = token;
     if (token) {
-      localStorage.setItem("token", token);
+      localStorage.setItem('token', token);
     } else {
-      localStorage.removeItem("token");
+      localStorage.removeItem('token');
     }
   }
 
@@ -25,17 +25,14 @@ class ApiService {
     return this.token;
   }
 
-  private async request<T>(
-    endpoint: string,
-    options: RequestInit = {}
-  ): Promise<T> {
+  private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const headers: HeadersInit = {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
       ...options.headers,
     };
 
     if (this.token) {
-      headers["Authorization"] = `Bearer ${this.token}`;
+      headers['Authorization'] = `Bearer ${this.token}`;
     }
 
     const response = await fetch(`${API_URL}${endpoint}`, {
@@ -61,8 +58,8 @@ class ApiService {
       email: string;
       role: string;
       avatar: string;
-    }>("/auth/register", {
-      method: "POST",
+    }>('/auth/register', {
+      method: 'POST',
       body: JSON.stringify({ name, email, password }),
     });
   }
@@ -75,8 +72,8 @@ class ApiService {
       email: string;
       role: string;
       avatar: string;
-    }>("/auth/login", {
-      method: "POST",
+    }>('/auth/login', {
+      method: 'POST',
       body: JSON.stringify({ email, password }),
     });
   }
@@ -88,31 +85,25 @@ class ApiService {
       email: string;
       role: string;
       avatar: string;
-    }>("/auth/me");
+    }>('/auth/me');
   }
 
   // User endpoints
-  async updateProfile(data: {
-    name?: string;
-    email?: string;
-    avatar?: string;
-  }) {
+  async updateProfile(data: { name?: string; email?: string; avatar?: string }) {
     return this.request<{
       _id: string;
       name: string;
       email: string;
       role: string;
       avatar: string;
-    }>("/users/profile", {
-      method: "PUT",
+    }>('/users/profile', {
+      method: 'PUT',
       body: JSON.stringify(data),
     });
   }
 
   async getUserProfile(userId: string) {
-    return this.request<{ _id: string; name: string; avatar: string }>(
-      `/users/profile/${userId}`
-    );
+    return this.request<{ _id: string; name: string; avatar: string }>(`/users/profile/${userId}`);
   }
 
   // Video endpoints
@@ -129,6 +120,10 @@ class ApiService {
         uploaderName: string;
         views: number;
         createdAt: string;
+        tmdbId?: number;
+        type?: 'movie' | 'tv';
+        posterPath?: string;
+        backdropPath?: string;
       }>;
       currentPage: number;
       totalPages: number;
@@ -148,17 +143,22 @@ class ApiService {
       uploaderName: string;
       views: number;
       createdAt: string;
+      tmdbId?: number;
+      type?: 'movie' | 'tv';
+      posterPath?: string;
+      backdropPath?: string;
+      embedUrl?: string;
     }>(`/videos/${id}`);
   }
 
   async uploadVideo(formData: FormData) {
     const headers: HeadersInit = {};
     if (this.token) {
-      headers["Authorization"] = `Bearer ${this.token}`;
+      headers['Authorization'] = `Bearer ${this.token}`;
     }
 
     const response = await fetch(`${API_URL}/videos`, {
-      method: "POST",
+      method: 'POST',
       headers,
       body: formData,
     });
@@ -172,19 +172,43 @@ class ApiService {
     return data;
   }
 
-  async updateVideo(
-    id: string,
-    data: { title?: string; description?: string }
-  ) {
+  async updateVideo(id: string, data: { title?: string; description?: string }) {
     return this.request(`/videos/${id}`, {
-      method: "PUT",
+      method: 'PUT',
       body: JSON.stringify(data),
     });
   }
 
   async deleteVideo(id: string) {
     return this.request<{ message: string }>(`/videos/${id}`, {
-      method: "DELETE",
+      method: 'DELETE',
+    });
+  }
+
+  async searchTMDB(query: string, type: 'movie' | 'tv' = 'movie') {
+    return this.request<{
+      results: Array<{
+        id: number;
+        title?: string;
+        name?: string;
+        overview: string;
+        poster_path: string;
+        release_date?: string;
+        first_air_date?: string;
+      }>;
+    }>(`/videos/search-tmdb?query=${encodeURIComponent(query)}&type=${type}`);
+  }
+
+  async importVideo(tmdbId: number, type: 'movie' | 'tv') {
+    return this.request<{
+      _id: string;
+      title: string;
+      description: string;
+      tmdbId: number;
+      type: string;
+    }>('/videos/import', {
+      method: 'POST',
+      body: JSON.stringify({ tmdbId, type }),
     });
   }
 }
