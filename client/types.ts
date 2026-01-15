@@ -5,12 +5,13 @@ export interface Video {
   thumbnailUrl: string;
   videoUrl: string;
   qualities?: {
-    '360p'?: string;
-    '480p'?: string;
-    '720p'?: string;
-    '1080p'?: string;
+    "360p"?: string;
+    "480p"?: string;
+    "720p"?: string;
+    "1080p"?: string;
     original?: string;
   };
+  genres?: string[];
   genre: string;
   duration: string;
   rating: string;
@@ -24,9 +25,18 @@ export interface Video {
   createdAt?: string;
   embedUrl?: string;
   tmdbId?: number;
-  type?: 'movie' | 'tv';
+  type?: "movie" | "tv";
   season?: number;
   episode?: number;
+  numberOfSeasons?: number;
+  seasonsData?: Array<{
+    seasonNumber: number;
+    episodeCount: number;
+    name: string;
+    overview: string;
+    airDate: string;
+    posterPath: string;
+  }>;
 }
 
 export interface Category {
@@ -41,10 +51,10 @@ export interface BackendVideo {
   description: string;
   videoPath: string;
   qualities?: {
-    '360p'?: string;
-    '480p'?: string;
-    '720p'?: string;
-    '1080p'?: string;
+    "360p"?: string;
+    "480p"?: string;
+    "720p"?: string;
+    "1080p"?: string;
     original?: string;
   };
   thumbnailPath: string;
@@ -55,8 +65,18 @@ export interface BackendVideo {
   processingStatus?: string;
   createdAt: string;
   tmdbId?: number;
-  type?: 'movie' | 'tv';
+  type?: "movie" | "tv";
   posterPath?: string;
   backdropPath?: string;
   embedUrl?: string;
+  genres?: string[];
+  numberOfSeasons?: number;
+  seasonsData?: Array<{
+    seasonNumber: number;
+    episodeCount: number;
+    name: string;
+    overview: string;
+    airDate: string;
+    posterPath: string;
+  }>;
 }

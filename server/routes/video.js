@@ -71,14 +71,11 @@ router.post('/import', protect, admin, async (req, res) => {
     const { tmdbId, type } = req.body;
 
     // Check if already exists
-    const existing = await Video.findOne({ tmdbId, type });
-    if (existing) {
-      return res.status(400).json({ message: 'Video already imported' });
-    }
+    let video = await Video.findOne({ tmdbId, type });
 
     const details = await getTMDBDetails(tmdbId, type);
 
-    const video = await Video.create({
+    const videoData = {
       title: type === 'movie' ? details.title : details.name,
       description: details.overview,
       tmdbId: details.id,
@@ -92,12 +89,33 @@ router.post('/import', protect, admin, async (req, res) => {
         : null,
       thumbnailPath: details.backdrop_path
         ? `https://image.tmdb.org/t/p/w500${details.backdrop_path}`
-        : null, // Use backdrop as thumbnail
+        : null,
       uploader: req.user._id,
       uploaderName: req.user.name,
       processingStatus: 'completed',
-      duration: type === 'movie' ? details.runtime : 0,
-    });
+      duration: type === 'movie' ? (details.runtime * 60) : 0,
+      genres: details.genres ? details.genres.map(g => g.name) : [],
+    };
+
+    if (type === 'tv') {
+      videoData.numberOfSeasons = details.number_of_seasons;
+      videoData.seasonsData = details.seasons.map(s => ({
+        seasonNumber: s.season_number,
+        episodeCount: s.episode_count,
+        name: s.name,
+        overview: s.overview,
+        airDate: s.air_date,
+        posterPath: s.poster_path ? `https://image.tmdb.org/t/p/w500${s.poster_path}` : null,
+      }));
+    }
+
+    if (video) {
+      // Update existing video with new metadata
+      video = await Video.findByIdAndUpdate(video._id, videoData, { new: true });
+      return res.status(200).json(video);
+    }
+
+    video = await Video.create(videoData);
 
     res.status(201).json(video);
   } catch (error) {

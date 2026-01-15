@@ -47,12 +47,26 @@ const videoSchema = new mongoose.Schema(
     episode: {
       type: Number,
     },
+    numberOfSeasons: {
+      type: Number,
+    },
+    seasonsData: [
+      {
+        seasonNumber: Number,
+        episodeCount: Number,
+        name: String,
+        overview: String,
+        airDate: String,
+        posterPath: String,
+      },
+    ],
     posterPath: {
       type: String,
     },
     backdropPath: {
       type: String,
     },
+    genres: [String],
     // Common fields
     uploader: {
       type: mongoose.Schema.Types.ObjectId,
