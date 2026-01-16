@@ -20,8 +20,10 @@ const app = express();
 connectDB();
 
 // Middleware
+const clientUrl = process.env.CLIENT_URL ? process.env.CLIENT_URL.replace(/\/$/, '') : 'http://localhost:3000';
+
 app.use(cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:3000',
+    origin: clientUrl,
     credentials: true
 }));
 app.use(express.json({ limit: '10mb' })); // Increased limit for base64 images
