@@ -23,7 +23,7 @@ const BrowsePage: React.FC = () => {
     return () => clearTimeout(timer);
   }, [genre, allVideos]);
 
-  const title = genre ? `${genre} Videos` : 'All Videos';
+  const title = genre ? `${genre} Movies` : 'All Movies';
 
   return (
     <div className="pt-24 container mx-auto px-4 sm:px-6 lg:px-8">

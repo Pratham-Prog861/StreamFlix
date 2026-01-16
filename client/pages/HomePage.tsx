@@ -39,8 +39,8 @@ const HomePage: React.FC = () => {
   if (allVideos.length === 0) {
     return (
       <div className="pt-32 pb-20 text-center">
-        <h1 className="text-4xl font-bold mb-4">No videos found</h1>
-        <p className="text-gray-400 mb-8">Start by importing some videos from the Admin panel.</p>
+        <h1 className="text-4xl font-bold mb-4">No Movies found</h1>
+        <p className="text-gray-400 mb-8">Start by importing some movies from the Admin panel.</p>
         <Link
           to="/admin"
           className="bg-red-600 text-white px-8 py-3 rounded font-bold hover:bg-red-700 transition-colors"

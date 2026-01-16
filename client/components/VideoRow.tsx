@@ -19,7 +19,7 @@ const VideoRow: React.FC<VideoRowProps> = ({ title, videos, genreId }) => {
     const displayedVideos = videos.slice(0, 12);
     
     // For categories like 'Trending', which is not a real genre, link to the generic browse page.
-    const linkTarget = genreId === 'trending' ? '/browse' : `/browse/${genreId}`;
+    const linkTarget = genreId === 'movies' ? '/browse' : `/browse/${genreId}`;
 
     return (
         <section className="my-6 md:my-10">

@@ -67,7 +67,7 @@ export const VideoProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         // Create a "All Videos" category with backend videos
         const allCategory: Category = {
           id: 'all',
-          name: 'All Videos',
+          name: 'All Movies',
           videos: backendVideos,
         };
 
