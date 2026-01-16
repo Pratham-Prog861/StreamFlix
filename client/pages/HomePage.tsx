@@ -1,10 +1,10 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import HeroBanner from '../components/HeroBanner';
-import VideoGridSkeleton from '../components/VideoGridSkeleton';
-import VideoRow from '../components/VideoRow';
-import { useVideos } from '../context/VideoContext';
-import { Video } from '../types';
+import React from "react";
+import { Link } from "react-router-dom";
+import HeroBanner from "../components/HeroBanner";
+import VideoGridSkeleton from "../components/VideoGridSkeleton";
+import VideoRow from "../components/VideoRow";
+import { useVideos } from "../context/VideoContext";
+import { Video } from "../types";
 
 const HeroBannerSkeleton: React.FC = () => (
   <div className="relative h-[56.25vw] min-h-[400px] max-h-[800px] w-full animate-pulse bg-gray-800">
@@ -40,7 +40,9 @@ const HomePage: React.FC = () => {
     return (
       <div className="pt-32 pb-20 text-center">
         <h1 className="text-4xl font-bold mb-4">No Movies found</h1>
-        <p className="text-gray-400 mb-8">Start by importing some movies from the Admin panel.</p>
+        <p className="text-gray-400 mb-8">
+          Start by importing some movies from the Admin panel.
+        </p>
         <Link
           to="/admin"
           className="bg-red-600 text-white px-8 py-3 rounded font-bold hover:bg-red-700 transition-colors"
@@ -55,7 +57,7 @@ const HomePage: React.FC = () => {
     <div>
       <HeroBanner video={featuredVideo} />
       <div className="mt-[-2rem] sm:mt-[-4rem] md:mt-[-5rem] relative z-10">
-        {categories.map(category => (
+        {categories.slice(0, 2).map((category) => (
           <VideoRow
             key={category.id}
             title={category.name}
