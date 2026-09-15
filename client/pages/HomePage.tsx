@@ -21,7 +21,7 @@ const HeroBannerSkeleton: React.FC = () => (
 );
 
 const HomePage: React.FC = () => {
-  const { categories, allVideos, loading: contextLoading } = useVideos();
+  const { categories, allVideos, genres, loading: contextLoading } = useVideos();
   const featuredVideo: Video | null = allVideos[0] || null;
 
   if (contextLoading) {
@@ -54,9 +54,11 @@ const HomePage: React.FC = () => {
   }
 
   return (
-    <div>
+    <div className="relative overflow-hidden">
+      <div className="absolute -top-40 -left-32 h-96 w-96 rounded-full bg-cyan-500/20 blur-3xl"></div>
+      <div className="absolute top-40 -right-32 h-96 w-96 rounded-full bg-fuchsia-500/20 blur-3xl"></div>
       <HeroBanner video={featuredVideo} />
-      <div className="mt-[-2rem] sm:mt-[-4rem] md:mt-[-5rem] relative z-10">
+      <div className="mt-[-2rem] sm:mt-[-4rem] md:mt-[-5rem] relative z-10 space-y-8">
         {categories.slice(0, 2).map((category) => (
           <VideoRow
             key={category.id}
@@ -65,6 +67,45 @@ const HomePage: React.FC = () => {
             genreId={category.id}
           />
         ))}
+
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="rounded-2xl border border-cyan-400/30 bg-cyan-500/10 p-5">
+              <p className="text-xs uppercase tracking-[0.25em] text-cyan-200 mb-2">Curated</p>
+              <h3 className="text-xl font-bold text-white">Fresh Discovery Feed</h3>
+              <p className="text-sm text-gray-300 mt-2">Get a sharper mix than generic streaming homepages.</p>
+            </div>
+            <div className="rounded-2xl border border-fuchsia-400/30 bg-fuchsia-500/10 p-5">
+              <p className="text-xs uppercase tracking-[0.25em] text-fuchsia-200 mb-2">Faster</p>
+              <h3 className="text-xl font-bold text-white">Switch Servers Instantly</h3>
+              <p className="text-sm text-gray-300 mt-2">Jump providers in one tap for the best stream quality.</p>
+            </div>
+            <div className="rounded-2xl border border-emerald-400/30 bg-emerald-500/10 p-5">
+              <p className="text-xs uppercase tracking-[0.25em] text-emerald-200 mb-2">Personal</p>
+              <h3 className="text-xl font-bold text-white">Built Around Your List</h3>
+              <p className="text-sm text-gray-300 mt-2">Keep titles organized and pick up watching quickly.</p>
+            </div>
+          </div>
+        </section>
+
+        {genres.length > 0 && (
+          <section className="container mx-auto px-4 sm:px-6 lg:px-8 pb-10">
+            <div className="rounded-2xl border border-gray-800 bg-gray-900/60 p-6">
+              <h2 className="text-xl font-bold text-white mb-4">Explore by vibe</h2>
+              <div className="flex flex-wrap gap-2">
+                {genres.slice(0, 8).map((genre) => (
+                  <Link
+                    key={genre}
+                    to={`/browse/${encodeURIComponent(genre)}`}
+                    className="rounded-full border border-gray-700 bg-black/40 px-4 py-2 text-sm text-gray-200 hover:border-red-500 hover:text-white transition-colors"
+                  >
+                    {genre}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
       </div>
     </div>
   );

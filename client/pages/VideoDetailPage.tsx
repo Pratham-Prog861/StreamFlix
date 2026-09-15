@@ -5,6 +5,25 @@ import VideoRow from "../components/VideoRow";
 import { useVideos } from "../context/VideoContext";
 import { Video } from "../types";
 
+const dubOptions = [
+  { value: "auto", label: "Auto" },
+  { value: "hi", label: "Hindi" },
+  { value: "en", label: "English" },
+  { value: "ta", label: "Tamil" },
+  { value: "te", label: "Telugu" },
+  { value: "ja", label: "Japanese" },
+  { value: "ko", label: "Korean" },
+  { value: "es", label: "Spanish" },
+  { value: "fr", label: "French" },
+  { value: "de", label: "German" },
+];
+
+const allowedEmbedHosts = new Set([
+  "www.vidking.net",
+  "vidsrc.to",
+  "vidsrc.me",
+]);
+
 const SkeletonLoader = () => (
   <div className="pt-16 animate-pulse">
     <div className="aspect-video w-full bg-gray-800"></div>
@@ -74,6 +93,7 @@ const VideoDetailPage: React.FC = () => {
   const [selectedSeason, setSelectedSeason] = useState(1);
   const [selectedEpisode, setSelectedEpisode] = useState(1);
   const [activeProvider, setActiveProvider] = useState(0);
+  const [selectedDub, setSelectedDub] = useState("auto");
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -96,6 +116,7 @@ const VideoDetailPage: React.FC = () => {
           setSelectedEpisode(1);
         }
         setActiveProvider(0);
+        setSelectedDub("auto");
       } else {
         setRelatedVideos([]);
       }
@@ -122,33 +143,59 @@ const VideoDetailPage: React.FC = () => {
     }
   };
 
+  const applyDubParam = (url: string, supportsDub: boolean) => {
+    if (!supportsDub || selectedDub === "auto") return url;
+    const separator = url.includes("?") ? "&" : "?";
+    return `${url}${separator}ds_lang=${selectedDub}`;
+  };
+
   const providers = [
     {
       name: "Vidking",
-      url:
+      supportsDub: false,
+      url: applyDubParam(
         video.type === "tv"
           ? `https://www.vidking.net/embed/tv/${video.tmdbId}/${selectedSeason}/${selectedEpisode}`
           : `https://www.vidking.net/embed/movie/${video.tmdbId}`,
+        false
+      ),
     },
     {
       name: "Vidsrc.to",
-      url:
+      supportsDub: true,
+      url: applyDubParam(
         video.type === "tv"
           ? `https://vidsrc.to/embed/tv/${video.tmdbId}/${selectedSeason}/${selectedEpisode}`
           : `https://vidsrc.to/embed/movie/${video.tmdbId}`,
+        true
+      ),
     },
     {
       name: "Vidsrc.me",
-      url:
+      supportsDub: true,
+      url: applyDubParam(
         video.type === "tv"
           ? `https://vidsrc.me/embed/tv?tmdb=${video.tmdbId}&sea=${selectedSeason}&epi=${selectedEpisode}`
           : `https://vidsrc.me/embed/movie?tmdb=${video.tmdbId}`,
+        true
+      ),
     },
   ];
 
   const currentEmbedUrl = video.tmdbId
     ? providers[activeProvider].url
     : video.embedUrl;
+  const safeEmbedUrl = (() => {
+    if (!currentEmbedUrl) return null;
+    try {
+      const parsedUrl = new URL(currentEmbedUrl);
+      if (!["https:", "http:"].includes(parsedUrl.protocol)) return null;
+      if (!allowedEmbedHosts.has(parsedUrl.hostname)) return null;
+      return parsedUrl.toString();
+    } catch {
+      return null;
+    }
+  })();
 
   const currentSeasonData = video.seasonsData?.find(
     (s) => s.seasonNumber === selectedSeason
@@ -157,10 +204,10 @@ const VideoDetailPage: React.FC = () => {
 
   return (
     <div className="pt-16">
-      {currentEmbedUrl ? (
+      {safeEmbedUrl ? (
         <div className="w-full aspect-video bg-black">
           <iframe
-            src={currentEmbedUrl}
+            src={safeEmbedUrl}
             className="w-full h-full"
             frameBorder="0"
             allowFullScreen
@@ -187,7 +234,7 @@ const VideoDetailPage: React.FC = () => {
                     <React.Fragment key={g}>
                       {i > 0 && <span>&bull;</span>}
                       <Link
-                        to={`/browse/${g}`}
+                        to={`/browse/${encodeURIComponent(g)}`}
                         className="bg-gray-800 px-3 py-1 rounded-full text-sm hover:bg-red-700 transition-colors"
                       >
                         {g}
@@ -198,7 +245,7 @@ const VideoDetailPage: React.FC = () => {
                     <>
                       <span>&bull;</span>
                       <Link
-                        to={`/browse/${video.genre}`}
+                        to={`/browse/${encodeURIComponent(video.genre)}`}
                         className="bg-gray-800 px-3 py-1 rounded-full text-sm hover:bg-red-700 transition-colors"
                       >
                         {video.genre}
@@ -216,8 +263,8 @@ const VideoDetailPage: React.FC = () => {
 
           <div className="flex flex-col gap-4">
             {video.tmdbId && (
-              <div className="flex items-center gap-2 bg-gray-900/50 p-2 rounded-lg border border-gray-800">
-                <span className="text-xs font-bold text-gray-500 uppercase ml-2">
+              <div className="flex flex-wrap items-center gap-2 bg-gray-900/50 p-3 rounded-lg border border-gray-800">
+                <span className="text-xs font-bold text-gray-500 uppercase">
                   Server:
                 </span>
                 {providers.map((p, i) => (
@@ -233,6 +280,31 @@ const VideoDetailPage: React.FC = () => {
                     {p.name}
                   </button>
                 ))}
+              </div>
+            )}
+
+            {video.tmdbId && (
+              <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-800">
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-bold text-gray-500 uppercase">
+                    Dub / Audio
+                  </label>
+                  <select
+                    value={selectedDub}
+                    onChange={(e) => setSelectedDub(e.target.value)}
+                    className="bg-gray-800 text-white border border-gray-700 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-600"
+                  >
+                    {dubOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Best support is on Vidsrc providers. Vidking may ignore this
+                    setting.
+                  </p>
+                </div>
               </div>
             )}
 
