@@ -125,6 +125,56 @@ const VideoDetailPage: React.FC = () => {
     return () => clearTimeout(timer);
   }, [id, allVideos]);
 
+  const applyDubParam = (url: string, supportsDub: boolean) => {
+    if (!supportsDub || selectedDub === "auto") return url;
+    const separator = url.includes("?") ? "&" : "?";
+    return `${url}${separator}ds_lang=${selectedDub}`;
+  };
+
+  const providers = video?.tmdbId
+    ? [
+        {
+          name: "Vidking",
+          supportsDub: false,
+          url: applyDubParam(
+            video.type === "tv"
+              ? `https://www.vidking.net/embed/tv/${video.tmdbId}/${selectedSeason}/${selectedEpisode}`
+              : `https://www.vidking.net/embed/movie/${video.tmdbId}`,
+            false
+          ),
+        },
+        {
+          name: "Vidsrc.to",
+          supportsDub: true,
+          url: applyDubParam(
+            video.type === "tv"
+              ? `https://vidsrc.to/embed/tv/${video.tmdbId}/${selectedSeason}/${selectedEpisode}`
+              : `https://vidsrc.to/embed/movie/${video.tmdbId}`,
+            true
+          ),
+        },
+        {
+          name: "Vidsrc.me",
+          supportsDub: true,
+          url: applyDubParam(
+            video.type === "tv"
+              ? `https://vidsrc.me/embed/tv?tmdb=${video.tmdbId}&sea=${selectedSeason}&epi=${selectedEpisode}`
+              : `https://vidsrc.me/embed/movie?tmdb=${video.tmdbId}`,
+            true
+          ),
+        },
+      ]
+    : [];
+
+  useEffect(() => {
+    if (!video?.tmdbId || selectedDub === "auto") return;
+    if (providers[activeProvider]?.supportsDub) return;
+    const firstDubProviderIndex = providers.findIndex((p) => p.supportsDub);
+    if (firstDubProviderIndex !== -1 && firstDubProviderIndex !== activeProvider) {
+      setActiveProvider(firstDubProviderIndex);
+    }
+  }, [video?.tmdbId, selectedDub, activeProvider, providers]);
+
   if (video === undefined) {
     return <SkeletonLoader />;
   }
@@ -143,59 +193,11 @@ const VideoDetailPage: React.FC = () => {
     }
   };
 
-  const applyDubParam = (url: string, supportsDub: boolean) => {
-    if (!supportsDub || selectedDub === "auto") return url;
-    const separator = url.includes("?") ? "&" : "?";
-    return `${url}${separator}ds_lang=${selectedDub}`;
-  };
-
-  const providers = [
-    {
-      name: "Vidking",
-      supportsDub: false,
-      url: applyDubParam(
-        video.type === "tv"
-          ? `https://www.vidking.net/embed/tv/${video.tmdbId}/${selectedSeason}/${selectedEpisode}`
-          : `https://www.vidking.net/embed/movie/${video.tmdbId}`,
-        false
-      ),
-    },
-    {
-      name: "Vidsrc.to",
-      supportsDub: true,
-      url: applyDubParam(
-        video.type === "tv"
-          ? `https://vidsrc.to/embed/tv/${video.tmdbId}/${selectedSeason}/${selectedEpisode}`
-          : `https://vidsrc.to/embed/movie/${video.tmdbId}`,
-        true
-      ),
-    },
-    {
-      name: "Vidsrc.me",
-      supportsDub: true,
-      url: applyDubParam(
-        video.type === "tv"
-          ? `https://vidsrc.me/embed/tv?tmdb=${video.tmdbId}&sea=${selectedSeason}&epi=${selectedEpisode}`
-          : `https://vidsrc.me/embed/movie?tmdb=${video.tmdbId}`,
-        true
-      ),
-    },
-  ];
-
-  useEffect(() => {
-    if (!video?.tmdbId || selectedDub === "auto") return;
-    if (providers[activeProvider]?.supportsDub) return;
-    const firstDubProviderIndex = providers.findIndex((p) => p.supportsDub);
-    if (firstDubProviderIndex !== -1 && firstDubProviderIndex !== activeProvider) {
-      setActiveProvider(firstDubProviderIndex);
-    }
-  }, [video?.tmdbId, selectedDub, activeProvider, providers]);
-
   const activeProviderSupportsDub =
     providers[activeProvider]?.supportsDub ?? false;
 
   const currentEmbedUrl = video.tmdbId
-    ? providers[activeProvider].url
+    ? providers[activeProvider]?.url ?? null
     : video.embedUrl;
   const safeEmbedUrl = (() => {
     if (!currentEmbedUrl) return null;
