@@ -96,7 +96,7 @@ const HomePage: React.FC = () => {
                 {genres.slice(0, 8).map((genre) => (
                   <Link
                     key={genre}
-                    to={`/browse/${genre}`}
+                    to={`/browse/${encodeURIComponent(genre)}`}
                     className="rounded-full border border-gray-700 bg-black/40 px-4 py-2 text-sm text-gray-200 hover:border-red-500 hover:text-white transition-colors"
                   >
                     {genre}

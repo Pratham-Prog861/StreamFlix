@@ -217,7 +217,7 @@ const VideoDetailPage: React.FC = () => {
                     <React.Fragment key={g}>
                       {i > 0 && <span>&bull;</span>}
                       <Link
-                        to={`/browse/${g}`}
+                        to={`/browse/${encodeURIComponent(g)}`}
                         className="bg-gray-800 px-3 py-1 rounded-full text-sm hover:bg-red-700 transition-colors"
                       >
                         {g}
@@ -228,7 +228,7 @@ const VideoDetailPage: React.FC = () => {
                     <>
                       <span>&bull;</span>
                       <Link
-                        to={`/browse/${video.genre}`}
+                        to={`/browse/${encodeURIComponent(video.genre)}`}
                         className="bg-gray-800 px-3 py-1 rounded-full text-sm hover:bg-red-700 transition-colors"
                       >
                         {video.genre}
