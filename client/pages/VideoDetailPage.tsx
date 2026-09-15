@@ -94,6 +94,7 @@ const VideoDetailPage: React.FC = () => {
   const [selectedEpisode, setSelectedEpisode] = useState(1);
   const [activeProvider, setActiveProvider] = useState(0);
   const [selectedDub, setSelectedDub] = useState("auto");
+  const providerSupportsDub = [false, true, true];
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -124,6 +125,15 @@ const VideoDetailPage: React.FC = () => {
 
     return () => clearTimeout(timer);
   }, [id, allVideos]);
+
+  useEffect(() => {
+    if (!video?.tmdbId || selectedDub === "auto") return;
+    if (providerSupportsDub[activeProvider]) return;
+    const firstDubProviderIndex = providerSupportsDub.findIndex(Boolean);
+    if (firstDubProviderIndex !== -1 && firstDubProviderIndex !== activeProvider) {
+      setActiveProvider(firstDubProviderIndex);
+    }
+  }, [video?.tmdbId, selectedDub, activeProvider]);
 
   if (video === undefined) {
     return <SkeletonLoader />;
@@ -182,17 +192,8 @@ const VideoDetailPage: React.FC = () => {
     },
   ];
 
-  useEffect(() => {
-    if (!video?.tmdbId || selectedDub === "auto") return;
-    if (providers[activeProvider]?.supportsDub) return;
-    const firstDubProviderIndex = providers.findIndex((p) => p.supportsDub);
-    if (firstDubProviderIndex !== -1 && firstDubProviderIndex !== activeProvider) {
-      setActiveProvider(firstDubProviderIndex);
-    }
-  }, [video?.tmdbId, selectedDub, activeProvider, providers]);
-
   const activeProviderSupportsDub =
-    providers[activeProvider]?.supportsDub ?? false;
+    providerSupportsDub[activeProvider] ?? false;
 
   const currentEmbedUrl = video.tmdbId
     ? providers[activeProvider].url
