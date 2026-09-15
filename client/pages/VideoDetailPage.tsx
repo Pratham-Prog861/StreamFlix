@@ -18,6 +18,12 @@ const dubOptions = [
   { value: "de", label: "German" },
 ];
 
+const allowedEmbedHosts = new Set([
+  "www.vidking.net",
+  "vidsrc.to",
+  "vidsrc.me",
+]);
+
 const SkeletonLoader = () => (
   <div className="pt-16 animate-pulse">
     <div className="aspect-video w-full bg-gray-800"></div>
@@ -179,6 +185,17 @@ const VideoDetailPage: React.FC = () => {
   const currentEmbedUrl = video.tmdbId
     ? providers[activeProvider].url
     : video.embedUrl;
+  const safeEmbedUrl = (() => {
+    if (!currentEmbedUrl) return null;
+    try {
+      const parsedUrl = new URL(currentEmbedUrl);
+      if (!["https:", "http:"].includes(parsedUrl.protocol)) return null;
+      if (!allowedEmbedHosts.has(parsedUrl.hostname)) return null;
+      return parsedUrl.toString();
+    } catch {
+      return null;
+    }
+  })();
 
   const currentSeasonData = video.seasonsData?.find(
     (s) => s.seasonNumber === selectedSeason
@@ -187,10 +204,10 @@ const VideoDetailPage: React.FC = () => {
 
   return (
     <div className="pt-16">
-      {currentEmbedUrl ? (
+      {safeEmbedUrl ? (
         <div className="w-full aspect-video bg-black">
           <iframe
-            src={currentEmbedUrl}
+            src={safeEmbedUrl}
             className="w-full h-full"
             frameBorder="0"
             allowFullScreen
