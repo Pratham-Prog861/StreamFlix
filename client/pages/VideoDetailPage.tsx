@@ -182,6 +182,18 @@ const VideoDetailPage: React.FC = () => {
     },
   ];
 
+  useEffect(() => {
+    if (!video?.tmdbId || selectedDub === "auto") return;
+    if (providers[activeProvider]?.supportsDub) return;
+    const firstDubProviderIndex = providers.findIndex((p) => p.supportsDub);
+    if (firstDubProviderIndex !== -1 && firstDubProviderIndex !== activeProvider) {
+      setActiveProvider(firstDubProviderIndex);
+    }
+  }, [video?.tmdbId, selectedDub, activeProvider, providers]);
+
+  const activeProviderSupportsDub =
+    providers[activeProvider]?.supportsDub ?? false;
+
   const currentEmbedUrl = video.tmdbId
     ? providers[activeProvider].url
     : video.embedUrl;
@@ -301,8 +313,9 @@ const VideoDetailPage: React.FC = () => {
                     ))}
                   </select>
                   <p className="text-xs text-gray-500 mt-1">
-                    Best support is on Vidsrc providers. Vidking may ignore this
-                    setting.
+                    {selectedDub !== "auto" && !activeProviderSupportsDub
+                      ? "This server does not support dub switching. Switching to a supported server."
+                      : "Best support is on Vidsrc providers. Vidking may ignore this setting."}
                   </p>
                 </div>
               </div>
